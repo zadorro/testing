@@ -5,25 +5,22 @@ ymaps.ready(function () {
         data: function () {
             return {
                 unbound_routs: [],
-                districs: [],
+                districts: {},
                 routs_map: null,
-                bound_routs: []
+                bound_routs: [],
+                colors: [
+                    '#31bc9f', '#157abe'
+                ]
             }
         },
         computed: {},
         mounted: function () {
             this.get_unbound_routs();
+            this.get_districts();
             this.init_map();
             this.set_markers();
         },
         methods: {
-            init_map: function () {
-                var self = this;
-                self.routs_map = new ymaps.Map("YMapsID", {
-                    center: self.unbound_routs[0].position,
-                    zoom: 15
-                });
-            },
             get_unbound_routs: function () {
                 // ajax to get routs
                 this.unbound_routs = [
@@ -83,42 +80,58 @@ ymaps.ready(function () {
                         }
                     }
                 ];
-
+            },
+            get_districts: function () {
+                var color = 0;
                 var self = this;
                 this.unbound_routs.forEach(function (i) {
-                    i.unbound = true;
-                    if (!self.districs.includes(i.zone.name)) {
-                        self.districs.push(i.zone.name)
+                    var zone = i.zone.name;
+                    if (!(zone in self.districts)) {
+                        self.$set(self.districts, zone, self.colors[color]);
+                        color = self.colors.length - 1 > color ? color + 1 : 0
                     }
                 });
-            },
 
-            set_markers: function (searchParam) {
+            },
+            init_map: function () {
+                var self = this;
+                self.routs_map = new ymaps.Map("YMapsID", {
+                    center: self.unbound_routs[0] ? self.unbound_routs[0].position : [55.76, 37.64], // Проверяем есть ли список центруем по первому
+                    zoom: 15
+                });
+            },
+            searchfields: function (searchParam, item) {
+                var val = searchParam ? searchParam.target.value : 'all';
+                return val == 'all' ? true : val == item.zone.name
+            },
+            set_markers: function (e) {
                 var self = this;
                 self.routs_map.geoObjects.removeAll();
                 this.unbound_routs.forEach(function (item, i) {
-                    if (searchParam && searchParam != 'all'){
-                            if (searchParam != item.zone.name){
-                                return
-                            }
+                    if (!self.searchfields(e, item)) {
+                        return
                     }
                     self.routs_map.geoObjects.add(new ymaps.Placemark(item.position, {
                         balloonContent: item.address + '<button class="add-btn" onclick="vm.add_rout(' + i + ')">Добавить</button>',
                         iconContent: '-'
                     }, {
-                        //preset: 'islands#yellowStretchyIcon',
-                        iconColor: '#111'
+                        preset: 'islands#circleIcon',
+                        iconColor: '#cfd8df'
                     }));
 
                 });
 
                 this.bound_routs.forEach(function (item, i) {
+                    if (!self.searchfields(e, item)) {
+                        return
+                    }
+                    var color = self.districts[item.zone.name];
                     self.routs_map.geoObjects.add(new ymaps.Placemark(item.position, {
                         balloonContent: item.address + '<button class="add-btn" onclick="vm.remove_rout(' + i + ')">Удалить</button>',
                         iconContent: i + 1
                     }, {
-                        preset: 'islands#yellowStretchyIcon',
-                        iconColor: '#111'
+                        preset: 'islands#circleIcon',
+                        iconColor: color
                     }));
 
                 });
@@ -128,14 +141,18 @@ ymaps.ready(function () {
                 var el = this.unbound_routs[i];
                 this.unbound_routs.splice(i, 1);
                 this.bound_routs.push(el);
-                this.set_markers()
+                var e = document.getElementById('filter');
+                e.target = e;
+                this.set_markers(e)
             },
 
             remove_rout: function (i) {
                 var el = this.bound_routs[i];
                 this.bound_routs.splice(i, 1);
                 this.unbound_routs.push(el);
-                this.set_markers()
+                var e = document.getElementById('filter');
+                e.target = e;
+                this.set_markers(e)
             }
         }
     });

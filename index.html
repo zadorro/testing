@@ -19,10 +19,10 @@
                     <div id="YMapsID" style="width: 100%; height: 350px;"></div>
 
                     <div>
-                        <select v-on:change="set_markers()" style="display: block; width: 100%; margin: 15px 0 0;">
+                        <select v-on:change="set_markers" id="filter">
                             <option value="all">All</option>
-                            <option v-for="option in districs" v-bind:value="option">
-                                {{ option }}
+                            <option v-for="(item, i) in districts" v-bind:value="i">
+                                {{ i }}
                             </option>
                         </select>
                     </div>
@@ -31,22 +31,23 @@
                     <h2 class="routs__title">
                         Маршрут проверки
                     </h2>
-                    <div class="routs">
-                        <div class="rout" v-for="r in bound_routs">
-                            <div class="rout__status rout__status--green">
-                                <span>{{ r.zone.name }}</span>
-                            </div>
-                            <div class="rout__text">
-                                <h3 class="rout__location">
-                                    {{ r.address }}
-                                </h3>
-                                <span class="rout__date"></span>
-                            </div>
-                            <div class="rout__user">
-                                <img v-bind:src="r.zone.chief.photo" alt=""/>
-                            </div>
+                    <!--class="routs"-->
+                    <transition-group name="fade" tag="section">
+                        <div class="rout list-item" v-for="r in bound_routs">
+                                <div class="rout__status">
+                                    <span v-bind:style="{ background: districts[r.zone.name] }">{{ r.zone.name }}</span>
+                                </div>
+                                <div class="rout__text">
+                                    <h3 class="rout__location">
+                                        {{ r.address }}
+                                    </h3>
+                                    <span class="rout__date"></span>
+                                </div>
+                                <div class="rout__user">
+                                    <img v-bind:src="r.zone.chief.photo" alt=""/>
+                                </div>
                         </div>
-                    </div>
+                    </transition-group>
                 </div>
             </div>
         </div>
