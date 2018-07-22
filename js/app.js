@@ -15,9 +15,13 @@ ymaps.ready(function () {
         },
         computed: {},
         mounted: function () {
+            // получаем массив домов
             this.get_unbound_routs();
+            // получаем список зон
             this.get_districts();
+            // инит карты
             this.init_map();
+            // расставляем маркеры
             this.set_markers();
         },
         methods: {
@@ -88,6 +92,7 @@ ymaps.ready(function () {
                     var zone = i.zone.name;
                     if (!(zone in self.districts)) {
                         self.$set(self.districts, zone, self.colors[color]);
+                        // начинаем с нуля если в массиве цветов меньше эл-тов
                         color = self.colors.length - 1 > color ? color + 1 : 0
                     }
                 });
@@ -101,12 +106,14 @@ ymaps.ready(function () {
                 });
             },
             searchfields: function (searchParam, item) {
+                // возвращает ложь если значение селекта не совпадает с нужным элтом
                 var val = searchParam ? searchParam.target.value : 'all';
                 return val == 'all' ? true : val == item.zone.name
             },
             set_markers: function (e) {
                 var self = this;
                 self.routs_map.geoObjects.removeAll();
+                // наполняем пустые маршруты
                 this.unbound_routs.forEach(function (item, i) {
                     if (!self.searchfields(e, item)) {
                         return
@@ -120,7 +127,8 @@ ymaps.ready(function () {
                     }));
 
                 });
-
+                var routs_list = [];
+                // наполняем отмеченные маршруты
                 this.bound_routs.forEach(function (item, i) {
                     if (!self.searchfields(e, item)) {
                         return
@@ -133,8 +141,16 @@ ymaps.ready(function () {
                         preset: 'islands#circleIcon',
                         iconColor: color
                     }));
-
+                    routs_list.push(item.position)
                 });
+                //строим пешеходный маршрут
+                if(routs_list.length > 1){
+                    ymaps.route(routs_list, {routingMode: 'pedestrian'}).then(function(r){
+                        self.routs_map.geoObjects.add(r);
+                        var points = r.getWayPoints();
+                        points.options.set('visible', false);
+                    });
+                }
             },
 
             add_rout: function (i) {
@@ -143,7 +159,8 @@ ymaps.ready(function () {
                 this.bound_routs.push(el);
                 var e = document.getElementById('filter');
                 e.target = e;
-                this.set_markers(e)
+                this.set_markers(e);
+                this.send_routs();
             },
 
             remove_rout: function (i) {
@@ -152,7 +169,12 @@ ymaps.ready(function () {
                 this.unbound_routs.push(el);
                 var e = document.getElementById('filter');
                 e.target = e;
-                this.set_markers(e)
+                this.set_markers(e);
+                this.send_routs();
+            },
+
+            send_routs: function(){
+                //Отправка в бек
             }
         }
     });
