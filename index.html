@@ -12,49 +12,48 @@
     <![endif]-->
 </head>
 <body>
-    <main id="app">
-        <div class="container">
-            <div class="row">
-                <div class="col">
-                    <div id="YMapsID" style="width: 100%; height: 350px;"></div>
+<main id="app">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div id="YMapsID" style="width: 100%; height: 350px;"></div>
 
-                    <div>
-                        <select v-on:change="set_markers" id="filter">
-                            <option value="all">All</option>
-                            <option v-for="(item, i) in districts" v-bind:value="i">
-                                {{ i }}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col">
-                    <h2 class="routs__title">
-                        Маршрут проверки
-                    </h2>
-                    <!--class="routs"-->
-                    <transition-group name="fade" tag="section">
-                        <div class="rout list-item" v-for="r in bound_routs">
-                                <div class="rout__status">
-                                    <span v-bind:style="{ background: districts[r.zone.name] }">{{ r.zone.name }}</span>
-                                </div>
-                                <div class="rout__text">
-                                    <h3 class="rout__location">
-                                        {{ r.address }}
-                                    </h3>
-                                    <span class="rout__date"></span>
-                                </div>
-                                <div class="rout__user">
-                                    <img v-bind:src="r.zone.chief.photo" alt=""/>
-                                </div>
-                        </div>
-                    </transition-group>
+                <div>
+                    <select v-on:change="set_markers" id="filter">
+                        <option value="all">All</option>
+                        <option v-for="(item, i) in districts" v-bind:value="i">
+                            {{ i }}
+                        </option>
+                    </select>
                 </div>
             </div>
+            <div class="col">
+                <h2 class="routs__title">
+                    Маршрут проверки
+                </h2>
+                <transition-group name="list-item" class="routs" tag="div" class="list__ul">
+                    <div class="list-item rout" v-for="item in bound_routs" :key="item">
+                        <div class="rout__status">
+                            <span v-bind:style="{ background: districts[item.zone.name] }">{{ item.zone.name }}</span>
+                        </div>
+                        <div class="rout__text">
+                            <h3 class="rout__location">
+                                {{ item.address }}
+                            </h3>
+                            <span class="rout__date"></span>
+                        </div>
+                        <div class="rout__user">
+                            <img v-bind:src="item.zone.chief.photo" alt=""/>
+                        </div>
+                    </div>
+                </transition-group>
+            </div>
         </div>
-    </main>
-    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="js/app.js"></script>
+    </div>
+</main>
+<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
