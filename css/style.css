@@ -13,6 +13,18 @@ body {
     box-sizing: border-box;
 }
 
+.preload {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: #fff url('../img/preload.gif') no-repeat center;
+    z-index: 30;
+    color: #111111;
+}
+
+
 .container {
     max-width: 1170px;
     display: block;
@@ -147,25 +159,3 @@ select {
     transform: scale(0.5);
 }
 
-.list {
-    background: #FFF;
-    margin: auto;
-    padding: 1em 1em 1em;
-    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
-}
-
-.list__ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-.list__input {
-    display: flex;
-    margin-bottom: 0.5em;
-}
-
-.list__item {
-    display: block;
-    margin-bottom: 0.25em;
-}
