@@ -88,6 +88,11 @@ ymaps.ready(function () {
                         }
                     }
                 ];
+
+                /**
+                 * так же можно получать уже выбранные дома
+                 * достаточно записать их в bound_routs
+                 */
             },
             get_districts: function () {
                 /**
